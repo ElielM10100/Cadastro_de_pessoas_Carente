@@ -50,19 +50,29 @@ def excluir_pessoa():
 
     confirmed = messagebox.askyesno("Confirmação", "Tem certeza que deseja excluir esta pessoa?")
     if confirmed:
-        selected_index = int(selected_item[0][1:]) - 1  # Obter o índice da pessoa na lista
+        selected_id = tree.item(selected_item, 'values')[0]
 
         with open('dados.csv', 'r') as file:
             data = list(csv.reader(file))
 
-        del data[selected_index]
+        # Encontrar o índice da pessoa com base no ID
+        index_to_remove = None
+        for i, row in enumerate(data):
+            if row and row[0] == selected_id:
+                index_to_remove = i
+                break
 
-        with open('dados.csv', 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerows(data)
+        if index_to_remove is not None:
+            del data[index_to_remove]
 
-        label_status.config(text="Pessoa excluída com sucesso!", fg="green")
-        listar_pessoas()
+            with open('dados.csv', 'w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerows(data)
+
+            label_status.config(text="Pessoa excluída com sucesso!", fg="green")
+            listar_pessoas()
+        else:
+            label_status.config(text="ID da pessoa não encontrado.", fg="red")
 
 def menu():
     root = ThemedTk(theme="arc")  # Escolha um tema, por exemplo, "arc"
